@@ -1,0 +1,28 @@
+{
+  "name": "mantle-review-api",
+  "version": "1.0.0",
+  "description": "A backend API for simulating data for various products",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest",
+    "start": "node server",
+    "dev": "nodemon server/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Mantle-SDC/mantle-review-api.git"
+  },
+  "author": "Fanno Chea",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Mantle-SDC/mantle-review-api/issues"
+  },
+  "homepage": "https://github.com/Mantle-SDC/mantle-review-api#readme",
+  "dependencies": {
+    "express": "^4.17.1"
+  },
+  "devDependencies": {
+    "jest": "^27.2.2",
+    "nodemon": "^2.0.13"
+  }
+}

@@ -6,7 +6,8 @@
   "scripts": {
     "test": "jest",
     "start": "node server",
-    "dev": "nodemon server/index.js"
+    "dev": "nodemon server/index.js",
+    "lint": "eslint server/*"
   },
   "repository": {
     "type": "git",
@@ -19,7 +20,8 @@
   },
   "homepage": "https://github.com/Mantle-SDC/mantle-review-api#readme",
   "dependencies": {
-    "express": "^4.17.1"
+    "express": "^4.17.1",
+    "mongoose": "^6.0.8"
   },
   "devDependencies": {
     "eslint": "^7.32.0",

@@ -105,3 +105,7 @@ dist
 
 # VSCode
 .vscode
+
+# sample data
+reviews_photos.csv
+reviews.csv

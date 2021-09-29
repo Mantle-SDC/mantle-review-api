@@ -4,7 +4,7 @@
   "description": "A backend API for simulating data for various products",
   "main": "index.js",
   "scripts": {
-    "test": "jest",
+    "test": "jest --passWithNoTests",
     "start": "node server",
     "dev": "nodemon server/index.js",
     "lint": "eslint server/*"

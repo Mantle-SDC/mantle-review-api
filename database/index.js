@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 mongoose.connect('mongodb://localost:27017/mantle');
 
 const reviewSchema = new mongoose.Schema({
-  review_id: Number,
+  id: Number,
   rating: Number,
   summary: String,
   recommend: Boolean,

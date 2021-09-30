@@ -107,5 +107,4 @@ dist
 .vscode
 
 # sample data
-reviews_photos.csv
-reviews.csv
+sample_data

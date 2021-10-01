@@ -1,6 +1,8 @@
 const mongoose = require('mongoose');
 
-const connect = mongoose.connect('mongodb://localhost:27017/mantle');
+const connect = mongoose.connect('mongodb://localhost:27017/mantle', () => {
+  console.log('💾💾💾💾💾💾');
+});
 module.exports.connect = connect;
 
 const reviewSchema = new mongoose.Schema({

@@ -1,0 +1,5 @@
+recursive: true
+ignore: 
+  - 'node_modules/**'
+  - '.*'
+spec: '**/*.test.js'

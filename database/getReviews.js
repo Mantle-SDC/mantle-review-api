@@ -1,6 +1,12 @@
 const { ReviewModel } = require('./initDB');
 
-const getReviews = (productId, count = 5, sort = 'newest', page = 1) => {
+const getReviews = (productId, sort = 'newest', count = 5, page = 1) => {
+  const intCount = parseInt(count, 10);
+  const intPage = parseInt(page, 10);
+  const query = ReviewModel
+    .find({
+      product_id: productId,
+    });
   let sortObj = {};
   switch (sort) {
     case 'helpful':
@@ -16,12 +22,15 @@ const getReviews = (productId, count = 5, sort = 'newest', page = 1) => {
       sortObj = { date: -1 };
   }
 
-  ReviewModel.find({
-    product_id: productId,
-  })
-    .skip(page * count)
-    .limit(count)
+  if (page > 1) {
+    query.skip((intPage - 1) * intCount);
+  }
+
+  query
+    .limit(intCount)
     .sort(sortObj);
+
+  return query;
 
   // we need to look up how to efficiently 'paginate' in MongoDB.
   // Bucket pattern?

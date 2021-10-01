@@ -1,9 +1,10 @@
 const mongoose = require('mongoose');
 
-const connect = mongoose.connect('mongodb://localhost:27017/mantle', () => {
-  console.log('💾💾💾💾💾💾');
-});
-module.exports.connect = connect;
+mongoose.connect('mongodb://localhost:27017/mantle')
+  .then(() => {
+    console.log('💾💾💾💾💾💾');
+  })
+  .catch((err) => console.log('Error connecting to database: ', err));
 
 const reviewSchema = new mongoose.Schema({
   id: Number,

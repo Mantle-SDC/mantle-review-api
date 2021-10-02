@@ -13,14 +13,21 @@ jobs:
     strategy:
       matrix:
         node-version: [16.x]
+        mongodb-version: ['4.4']
 
     steps:
     - uses: actions/checkout@v2
 
     - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v1
+      uses: actions/setup-node@v2
       with:
         node-version: ${{ matrix.node-version }}
+        cache: 'npm'
+
+    - name: MongoDB in GitHub Actions
+      uses: supercharge/mongodb-github-action@1.6.0
+      with:
+        mongodb-version: ${{ matrix.mongodb-version }}
 
     - name: Test
       run: |

@@ -1,30 +1,49 @@
 const expect = require('chai').expect;
+const mongoose = require('mongoose');
+const { ReviewModel } = require('../initDB');
 const { getReviews } = require('../index');
-/* 
-The test do pass, but CI will fail because a real database connection is not possible.
-Will resume this test once mocked.
- */
+const reviewsSampleData = require('./reviewsSampleData')
+
 describe('getReviews', () => {
-  /* 
-  TODO: somehow test getReviews, but pointing it to the reviews_sample collection.
-  As it is, these tests are hitting the real data/collection; so the tests will fail
-  as soon as the data is different.
-   */
-  before(() => {
-    require('../initDB');
+  before((done) => {
+    console.log('connecting...');
+    // initDB connected first, so we have to reconnect to test db
+    mongoose.disconnect()
+      .then(() => {
+        return mongoose.connect('mongodb://localhost:27017/test')
+      })
+      .then(() => {
+        console.log('connected to /test');
+        console.log('trying to insert...');
+        return ReviewModel.insertMany(reviewsSampleData)
+      })
+      .then((res) => {
+        expect(res).to.have.length(10);
+        done();
+      })
+      .catch(done);
+
   });
 
-  after(() => {
-    require('mongoose').disconnect();
+  after((done) => {
+    mongoose.connection.db.dropCollection('reviews')
+      .then(() => {
+        return mongoose.disconnect();
+      })
+      .then(() => done())
+      .catch(done);
   });
 
-  xit('should be able to retrieve data using productId', (done) => {
-    getReviews(12)
+  it('should be able to retrieve data using just productId', (done) => {
+    getReviews(4)
     .then((data) => {
-      expect(data).to.have.lengthOf(6);
+      expect(data).to.have.lengthOf(2);
       done();
     })
     .catch(done);
   });
 
+  it('should retrieve data sorted by newest first');
+  it('should retrieve data sorted by most helpful first');
+  it('should retrieve data sorted by most relevant first');
 }); // end describe()

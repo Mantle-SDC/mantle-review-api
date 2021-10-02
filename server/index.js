@@ -14,9 +14,16 @@ app.get('/', (req, res) => {
 app.get('/reviews', (req, res) => {
   // TODO: function that will get and shape data from DB
   console.log('GET query parameters: ', req.query);
-  getReviews(req.query.product_id, req.query.sort, req.query.count, req.query.page)
+  const responseData = {
+    product: req.query.product_id,
+    page: req.query.page || 1,
+    count: req.query.count || 5,
+  };
+
+  getReviews(req.query.product_id, req.query.sort, req.query.count, req.query.page).select('-product_id -reviewer_email')
     .then((data) => {
-      res.status(200).send(data);
+      responseData.results = data;
+      res.status(200).send(responseData);
     })
     .catch((err) => {
       res.status(401).send('Error retrieving from database');

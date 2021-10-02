@@ -4,17 +4,24 @@ const { getReviews } = require('../database/index');
 const app = express();
 const port = 3000;
 
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
 app.get('/', (req, res) => {
   res.status(200).send('This is the endpoint for review data');
 });
 
 app.get('/reviews', (req, res) => {
   // TODO: function that will get and shape data from DB
-  getReviews(req.params.product_id)
+  console.log('GET query parameters: ', req.query);
+  getReviews(req.query.product_id, req.query.sort, req.query.count, req.query.page)
     .then((data) => {
       res.status(200).send(data);
     })
-    .catch((err) => console.log('Error retrieving reviews from DB: ', err));
+    .catch((err) => {
+      res.status(401).send('Error retrieving from database');
+      console.log(err);
+    });
 });
 
 app.get('/revews/meta', (req, res) => {

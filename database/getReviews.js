@@ -28,7 +28,8 @@ const getReviews = (productId, sort = 'newest', count = 5, page = 1) => {
 
   query
     .limit(intCount)
-    .sort(sortObj);
+    .sort(sortObj)
+    .lean();
 
   return query;
 

@@ -6,7 +6,7 @@ const getReviews = (productId, sort = 'newest', count = 5, page = 1) => {
   const query = ReviewModel
     .find({
       product_id: productId,
-    });
+    }, '-__v -_id');
   let sortObj = {};
   switch (sort) {
     case 'helpful':

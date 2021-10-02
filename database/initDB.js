@@ -7,7 +7,7 @@ mongoose.connect('mongodb://localhost:27017/mantle')
   .catch((err) => console.log('Error connecting to database: ', err));
 
 const reviewSchema = new mongoose.Schema({
-  id: Number,
+  review_id: Number,
   product_id: Number,
   rating: Number,
   summary: String,

@@ -44,6 +44,7 @@ db.reviews_original.aggregate([
     "product_id": "$product_id",
     "rating": "$rating",
     "summary": "$summary",
+    "body": "$body",
     "recommend": "$recommend",
     "date": { $toDate: "$date" },
     "reviewer_name": "$reviewer_name",
@@ -71,6 +72,7 @@ db.reviews_original.aggregate([
     "product_id": "$product_id",
     "rating": "$rating",
     "summary": "$summary",
+    "body": "$body",
     "recommend": "$recommend",
     "date": { $toDate: "$date" },
     "reviewer_name": "$reviewer_name",
@@ -94,7 +96,7 @@ Don't forget to create indexes on that new, transformed set of data:
 This will let me set up a small collection of random samples of data to test against (if the samples change, the tests will need to change also...)
 
 ```
-db.reviews_original.aggregate([
+db.reviews.aggregate([
   {$sample: {size: 20}},
   {$out: {
     db: "mantle", 

@@ -1,5 +1,4 @@
 node_modules
 jest.config.js
-*.test.js
 sample_data
-reviewsSampleData.js
+**/tests/*

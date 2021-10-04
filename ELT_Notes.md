@@ -1,4 +1,6 @@
-# Importing a CSV into mongoDB
+# Initial import/setup
+
+## Importing a CSV into mongoDB
 `mongoimport --type csv -d mantle -c reviews_original --headerline --drop reviews.csv`
 
 `mongoimport --type csv -d mantle -c reviews_photos --headerline --drop reviews_photos.csv`
@@ -7,7 +9,7 @@
 
 `mongoimport --type csv -d mantle -c characteristics_reviews --headerline --drop characteristics_reviews.csv`
 
-# Create Indexes to massively speed up lookups
+## Create Indexes to massively speed up lookups
 
 `db.reviews_photos.createIndex({review_id: 1})` // so we can $lookup review_id quickly.
 
@@ -15,29 +17,32 @@
 
 `db.reviews_original.createIndex({id: 1})` // $lookup uses this for localField
 
+`db.characteristics.createIndex({id: 1})`
+
 `db.characteristics.createIndex({product_id: 1})`
 
 `db.characteristics_reviews.createIndex({characteristic_id: 1})`
 
-# MongoDB Aggregation Pipeline Stages
+# The ***reviews*** collection
 
-## `$lookup` to embed documents from one collection into another
+Use the `$lookup` stage to embed documents from one collection into another, e.g.:
 
 ```
-db.reviews_original.aggregate([
+...
   {$lookup: {
       from: "reviews_photos",
       localField: "id",
       foreignField: "review_id",
       as: "photos"
     }}
-])
+...
 ```
-## `$project` stage to modify fields 
+The `$project` stage is powerful and can be used to modify/shape the document - present new fields that are based on other fields, hide fields, perform operations that change fields' type and/or data, etc.
+
 e.g. `id` -> `review_id`, and date's number type to a proper Date type
 
 ```
-db.reviews_original.aggregate([
+...
   {$project: {
     "_id": 0,
     "review_id": "$id",
@@ -53,10 +58,23 @@ db.reviews_original.aggregate([
     "helpfulness": "$helpfulness",
     "photos": "$photos",
     }}
-])
+...
 ```
 
-### All together, we can create a pipeline that will embed photos, rename id to review_id, change date to an ISODate type, only keep the id and url for each photo document, and output to a collection
+The `$out` stage must be the last stage, and writes the resulting documents of the aggregation pipeline to a collection:
+
+```
+...
+  {$out: {
+    db: "mantle", 
+    coll: "reviews"
+  }}
+]) // closing braces of aggregate()
+```
+
+## Final *mongosh* statement
+
+All together, we can create a pipeline that will embed photos, rename id to review_id, change date to an ISODate type, only keep the id and url for each photo document, and output to a collection
 
 ```
 db.reviews_original.aggregate([
@@ -88,11 +106,107 @@ db.reviews_original.aggregate([
   }}
 ])
 ```
-Don't forget to create indexes on that new, transformed set of data:
+Don't forget to create relevant indexes on the new, transformed collection of data:
 `db.reviews.createIndex({product_id: 1})`
 `db.reviews.createIndex({review_id: 1})`
 
-## `$sample` to randomly get documents
+
+# The ***reviewsMeta*** collection
+
+These ELT steps are for creating a collection that is closer to the structure of the API response from /reviews/meta.
+
+
+**Create documents that provide characteristics' average score and count of reviews:**
+
+```
+db.characteristics_reviews.aggregate([
+    {$group: {
+        _id: "$characteristic_id",
+        reviewCount: {$count: {}},
+        average: {$avg: "$value"},
+        rawValues: {$push: "$value"}
+        }},
+    {$out: {
+        db: "mantle",
+        coll: "characteristics_averages",
+    }},
+], {allowDiskUse: true});
+```
+
+40 s
+
+**Aggregation that will pull in the average values/ratings of that characteristic**
+
+*$replaceRoot is used to create a single document that has the review stats 'flattened' to the same level as the other keys*
+
+```
+db.characteristics.aggregate([
+    {$lookup: {
+        from: "characteristics_averages",
+        localField: "id",
+        foreignField: "_id",
+        as: "reviewStats"
+        }},
+    {$replaceRoot: {newRoot: {$mergeObjects: [{$arrayElemAt: ["$reviewStats", 0]}, "$$ROOT" ]}}},
+    {$set: {"characteristic_id": "$id"}},
+    {$unset: ["reviewStats", "id"]},
+    {$out: {
+        db: "mantle",
+        coll: "characteristics_combined",
+    }},
+], {allowDiskUse: true});
+```
+
+190 s
+
+*Create index*:
+
+`db.characteristics_combined.createIndex({product_id: 1});`
+
+**Get the ratings and recommends of a single product into a single document**
+
+```
+db.reviews.aggregate([
+    {$group: {
+        _id: "$product_id",
+        ratings: {$push: "$rating"},
+        recommends: {$push: "$recommend"},
+        }},
+    {$out: {
+        db: "mantle",
+        coll: "reviews_stats",
+    }}
+]);
+```
+
+14 s
+
+**Combine the product rating, recommends, and characteristic ratings into a single document. This completes the reviewsMeta collection**
+
+```
+db.reviews_stats.aggregate([
+    {$lookup: {
+        from: "characteristics_combined",
+        localField: "_id",
+        foreignField: "product_id",
+        as: "characteristics",
+    }},
+    {$out: {
+        db: "mantle",
+        coll: "reviewsMeta",
+    }},
+]);
+```
+
+56 s
+
+_id is the product ID, and is already indexed.
+
+
+# Miscellaneous
+
+## Use the `$sample` stage to randomly get documents
+
 This will let me set up a small collection of random samples of data to test against (if the samples change, the tests will need to change also...)
 
 ```
@@ -105,7 +219,7 @@ db.reviews.aggregate([
 ])
 ```
 
-# Export from the database to a file 
+## Export from the database to a file 
 
 useful in my case to save a test set of data.
 
@@ -113,4 +227,6 @@ https://docs.mongodb.com/database-tools/mongoexport/#synopsis
 
 `mongoexport --db=mantle --collection=reviews_test --out=reviewsTestData.json`
 
-use `mongoimport` or Mongoose's `Model.insertMany()` to later to restore the data and use it.
+Use `mongoimport` or Mongoose's `Model.insertMany()` to later to restore the data and use it.
+
+You will likely need to manually edit the data a bit because JSON does not store *type* information, and you may not care to keep old ObjectId information.

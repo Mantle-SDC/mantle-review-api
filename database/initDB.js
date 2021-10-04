@@ -32,4 +32,4 @@ const reviewsMetaSchema = new mongoose.Schema({
 // Name of the model, the schema to use, and - optionally - the exact name of the collection
 // to use in the database.
 module.exports.ReviewModel = mongoose.model('Review', reviewSchema, 'reviews');
-module.exports.ReviewsMetaModel = mongoose.model('ReviewMeta', reviewsMetaSchema, 'review_stats_combined');
+module.exports.ReviewsMetaModel = mongoose.model('ReviewMeta', reviewsMetaSchema, 'reviewsMeta');

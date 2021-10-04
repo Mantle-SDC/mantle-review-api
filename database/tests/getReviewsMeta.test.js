@@ -4,7 +4,7 @@ const { ReviewsMetaModel } = require('../initDB');
 const { getReviewsMeta } = require('../index');
 const { reviewsMetaTestData } = require('./testData')
 
-describe('getReviews', () => {
+describe('getReviewsMeta', () => {
   before((done) => {
     console.log('connecting...');
     // initDB connected first, so we have to reconnect to test db
@@ -58,6 +58,4 @@ describe('getReviews', () => {
       })
       .catch(done);
   });
-
-
 });

@@ -1,5 +1,5 @@
 const express = require('express');
-const { getReviews } = require('../database/index');
+const { getReviews, getReviewsMeta } = require('../database/index');
 
 const app = express();
 const port = 3000;
@@ -20,7 +20,8 @@ app.get('/reviews', (req, res) => {
     count: req.query.count || 5,
   };
 
-  getReviews(req.query.product_id, req.query.sort, req.query.count, req.query.page).select('-product_id -reviewer_email')
+  getReviews(req.query.product_id, req.query.sort, req.query.count, req.query.page)
+    .select('-product_id -reviewer_email')
     .then((data) => {
       responseData.results = data;
       res.status(200).send(responseData);
@@ -31,9 +32,38 @@ app.get('/reviews', (req, res) => {
     });
 });
 
-app.get('/revews/meta', (req, res) => {
-  // TODO
-  res.status(200).send('This is the GET /reviews/meta endpoint');
+const countReducer = (prev, curr) => {
+  const responseObj = prev;
+  if (responseObj[curr] === undefined) responseObj[curr] = 0;
+  responseObj[curr] += 1;
+  return responseObj;
+};
+
+const characteristicReducer = (prev, curr) => {
+  const responseObj = prev;
+  responseObj[curr.name] = { id: curr.characteristic_id, value: curr.average };
+  return responseObj;
+};
+
+app.get('/reviews/meta', (req, res) => {
+  const responseData = {
+    product_id: req.query.product_id,
+    ratings: {},
+    recommended: {},
+    characteristics: {},
+  };
+
+  getReviewsMeta(req.query.product_id)
+    .then((data) => {
+      responseData.ratings = data.ratings.reduce(countReducer, {});
+      responseData.recommended = data.recommends.reduce(countReducer, {});
+      responseData.characteristics = data.characteristics.reduce(characteristicReducer, {});
+      res.status(200).send(responseData);
+    })
+    .catch((err) => {
+      res.status(401).send('Error retrieving from database');
+      console.log(err);
+    });
 });
 
 app.post('/reviews', (req, res) => {

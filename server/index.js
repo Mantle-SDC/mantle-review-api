@@ -1,5 +1,5 @@
 const express = require('express');
-const { getReviews, getReviewsMeta } = require('../database/index');
+const { getReviews, getReviewsMeta, markHelpful } = require('../database/index');
 
 const app = express();
 const port = 3000;
@@ -72,8 +72,14 @@ app.post('/reviews', (req, res) => {
 });
 
 app.put('/reviews/:review_id/helpful', (req, res) => {
-  // TODO
-  res.status(200).send('I received review_id ', req.params.review_id);
+  markHelpful(req.params.review_id)
+    .then(() => {
+      res.status(204).send('NO CONTENT');
+    })
+    .catch((err) => {
+      res.status(500).send('Error updating database');
+      console.log(err);
+    });
 });
 
 app.put('/reviews/:review_id/report', (req, res) => {

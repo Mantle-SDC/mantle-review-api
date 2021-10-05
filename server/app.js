@@ -1,5 +1,10 @@
 const express = require('express');
-const { getReviews, getReviewsMeta, markHelpful, reportReview } = require('../database/index');
+const {
+  getReviews,
+  getReviewsMeta,
+  markHelpful,
+  reportReview,
+} = require('../database/index');
 
 const app = express();
 

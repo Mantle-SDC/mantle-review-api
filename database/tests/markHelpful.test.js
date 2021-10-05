@@ -4,7 +4,7 @@ const { markHelpful } = require('../index');
 const { ReviewModel } = require('../initDB');
 const { reviewsTestData } = require('./testData');
 
-describe('', () => {
+describe('markHelpful', () => {
   before((done) => {
     console.log('connecting...');
     // initDB connected first, so we have to reconnect to test db

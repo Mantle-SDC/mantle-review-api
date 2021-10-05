@@ -22,7 +22,7 @@ const reviewSchema = new mongoose.Schema({
   }],
 });
 
-const reviewsMetaSchema = new mongoose.Schema({
+const reviewMetaSchema = new mongoose.Schema({
   _id: Number,
   ratings: Array,
   recommends: Array,
@@ -32,4 +32,5 @@ const reviewsMetaSchema = new mongoose.Schema({
 // Name of the model, the schema to use, and - optionally - the exact name of the collection
 // to use in the database.
 module.exports.ReviewModel = mongoose.model('Review', reviewSchema, 'reviews');
-module.exports.ReviewsMetaModel = mongoose.model('ReviewMeta', reviewsMetaSchema, 'reviewsMeta');
+module.exports.ReviewsMetaModel = mongoose.model('ReviewMeta', reviewMetaSchema, 'reviewsMeta');
+module.exports.ReviewReportedModel = mongoose.model('ReviewReported', reviewSchema, 'ReviewsReported');

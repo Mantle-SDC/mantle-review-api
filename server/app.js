@@ -1,5 +1,5 @@
 const express = require('express');
-const { getReviews, getReviewsMeta, markHelpful } = require('../database/index');
+const { getReviews, getReviewsMeta, markHelpful, reportReview } = require('../database/index');
 
 const app = express();
 
@@ -74,14 +74,20 @@ app.put('/reviews/:review_id/helpful', (req, res) => {
       res.status(204).send('NO CONTENT');
     })
     .catch((err) => {
-      res.status(500).send('Error updating database');
-      console.log(err);
+      res.status(500).send('Internal server error');
+      console.log('Error updating database:', err);
     });
 });
 
 app.put('/reviews/:review_id/report', (req, res) => {
-  // TODO
-  res.status(200).send('I received review_id ', req.params.review_id);
+  reportReview(req.params.review_id)
+    .then(() => {
+      res.status(204).send('NO CONTENT');
+    })
+    .catch((err) => {
+      res.status(500).send('Internal server error');
+      console.log('Error querying or moving reported review:', err);
+    });
 });
 
 module.exports.app = app;

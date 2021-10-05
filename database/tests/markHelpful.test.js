@@ -4,17 +4,14 @@ const { markHelpful } = require('../index');
 const { ReviewModel } = require('../initDB');
 const { reviewsTestData } = require('./testData');
 
-describe('', () => {
+describe('markHelpful', () => {
   before((done) => {
-    console.log('connecting...');
     // initDB connected first, so we have to reconnect to test db
     mongoose.disconnect()
       .then(() => {
         return mongoose.connect('mongodb://localhost:27017/test')
       })
       .then(() => {
-        console.log('connected to /test');
-        console.log('trying to insert...');
         return ReviewModel.insertMany(reviewsTestData)
       })
       .then((res) => {

@@ -4,6 +4,7 @@ const {
   getReviewsMeta,
   markHelpful,
   reportReview,
+  addReview,
 } = require('../database/index');
 
 const app = express();
@@ -23,7 +24,6 @@ app.get('/reviews', (req, res) => {
   };
 
   getReviews(req.query.product_id, req.query.sort, req.query.count, req.query.page)
-    .select('-product_id -reviewer_email')
     .then((data) => {
       responseData.results = data;
       res.status(200).send(responseData);
@@ -69,8 +69,14 @@ app.get('/reviews/meta', (req, res) => {
 });
 
 app.post('/reviews', (req, res) => {
-  // TODO
-  res.status(200).send('This is the POST /reviews/meta endpoint');
+  addReview(req.body)
+    .then(() => {
+      res.status(201).send('CREATED');
+    })
+    .catch((err) => {
+      res.status(500).send('Internal server error');
+      console.log('Error updating database:', err);
+    });
 });
 
 app.put('/reviews/:review_id/helpful', (req, res) => {

@@ -23,7 +23,7 @@ describe('reportReview', () => {
   });
 
   after((done) => {
-    mongoose.connection.db.dropCollection('reviews')
+    mongoose.connection.db.dropCollection('ReviewsReported')
       .then(() => {
         return mongoose.disconnect();
       })

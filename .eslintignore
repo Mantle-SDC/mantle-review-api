@@ -2,3 +2,4 @@ node_modules
 jest.config.js
 sample_data
 **/tests/*
+benchmarks

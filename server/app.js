@@ -13,11 +13,8 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.get('/', (req, res) => {
-  res.status(200).send('This is the endpoint for review data');
-});
-
 app.get('/reviews', (req, res) => {
+  logger.debug('GET /reviews with query data: %o', req.query);
   const responseData = {
     product: req.query.product_id,
     page: req.query.page || 1,
@@ -28,10 +25,11 @@ app.get('/reviews', (req, res) => {
     .then((data) => {
       responseData.results = data;
       res.status(200).send(responseData);
+      logger.debug('Sent status 200, with data: %o', responseData);
     })
     .catch((err) => {
       res.status(401).send('Error retrieving from database');
-      logger.error(err);
+      logger.error('Error trying to get reviews from database: %o', err);
     });
 });
 
@@ -49,6 +47,7 @@ const characteristicReducer = (prev, curr) => {
 };
 
 app.get('/reviews/meta', (req, res) => {
+  logger.debug('GET /reviews/meta with query data: %o', req.query);
   const responseData = {
     product_id: req.query.product_id,
     ratings: {},
@@ -62,6 +61,7 @@ app.get('/reviews/meta', (req, res) => {
       responseData.recommended = data.recommends.reduce(countReducer, {});
       responseData.characteristics = data.characteristics.reduce(characteristicReducer, {});
       res.status(200).send(responseData);
+      logger.debug('Sent status 200, with data: %o', responseData);
     })
     .catch((err) => {
       res.status(401).send('Error retrieving from database');
@@ -70,9 +70,11 @@ app.get('/reviews/meta', (req, res) => {
 });
 
 app.post('/reviews', (req, res) => {
+  logger.debug('POST /reviews with body: %o', req.body);
   addReview(req.body)
     .then(() => {
       res.status(201).send('CREATED');
+      logger.debug('sent status 201 CREATED');
     })
     .catch((err) => {
       res.status(500).send('Internal server error');
@@ -81,9 +83,11 @@ app.post('/reviews', (req, res) => {
 });
 
 app.put('/reviews/:review_id/helpful', (req, res) => {
+  logger.debug('PUT /reviews/%d/helpful', req.params.review_id);
   markHelpful(req.params.review_id)
     .then(() => {
       res.status(204).send('NO CONTENT');
+      logger.debug('sent status 204 NO CONTENT');
     })
     .catch((err) => {
       res.status(500).send('Internal server error');
@@ -92,9 +96,11 @@ app.put('/reviews/:review_id/helpful', (req, res) => {
 });
 
 app.put('/reviews/:review_id/report', (req, res) => {
+  logger.debug('PUT /reviews/%d/report', req.params.review_id);
   reportReview(req.params.review_id)
     .then(() => {
       res.status(204).send('NO CONTENT');
+      logger.debug('sent status 204 NO CONTENT');
     })
     .catch((err) => {
       res.status(500).send('Internal server error');

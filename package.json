@@ -21,7 +21,8 @@
   "homepage": "https://github.com/Mantle-SDC/mantle-review-api#readme",
   "dependencies": {
     "express": "^4.17.1",
-    "mongoose": "^6.0.8"
+    "mongoose": "^6.0.8",
+    "pino": "^6.13.3"
   },
   "devDependencies": {
     "chai": "^4.3.4",

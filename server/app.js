@@ -6,6 +6,7 @@ const {
   reportReview,
   addReview,
 } = require('../database/index');
+const { logger } = require('../utils/logger');
 
 const app = express();
 
@@ -30,7 +31,7 @@ app.get('/reviews', (req, res) => {
     })
     .catch((err) => {
       res.status(401).send('Error retrieving from database');
-      console.log(err);
+      logger.error(err);
     });
 });
 
@@ -64,7 +65,7 @@ app.get('/reviews/meta', (req, res) => {
     })
     .catch((err) => {
       res.status(401).send('Error retrieving from database');
-      console.log(err);
+      logger.error(err);
     });
 });
 
@@ -75,7 +76,7 @@ app.post('/reviews', (req, res) => {
     })
     .catch((err) => {
       res.status(500).send('Internal server error');
-      console.log('Error updating database:', err);
+      logger.error('Error updating database:', err);
     });
 });
 
@@ -86,7 +87,7 @@ app.put('/reviews/:review_id/helpful', (req, res) => {
     })
     .catch((err) => {
       res.status(500).send('Internal server error');
-      console.log('Error updating database:', err);
+      logger.error('Error updating database:', err);
     });
 });
 
@@ -97,7 +98,7 @@ app.put('/reviews/:review_id/report', (req, res) => {
     })
     .catch((err) => {
       res.status(500).send('Internal server error');
-      console.log('Error querying or moving reported review:', err);
+      logger.error('Error querying or moving reported review:', err);
     });
 });
 

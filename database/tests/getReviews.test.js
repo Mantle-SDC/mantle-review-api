@@ -70,7 +70,6 @@ describe('getReviews', () => {
   it('should retrieve data in the shape that is needed for the API response', (done) => {
     const reviewKeys = [
       'review_id',
-      'product_id',
       'rating',
       'summary',
       'recommend',
@@ -86,7 +85,6 @@ describe('getReviews', () => {
     getReviews(643752, 'helpful', 1)
     .then((data) => {
       expect(data).to.have.length(1);
-      expect(data[0].product_id).to.equal(643752);
       expect(data[0].review_id).to.equal(3716670);
       expect(data[0]).to.have.all.keys(reviewKeys);
       done();

@@ -8,5 +8,13 @@ module.exports = (reviewPOST) => {
     reviewDoc.photos.push({ url });
   });
 
-  return ReviewModel.create(reviewDoc);
+  if (reviewDoc.summary || reviewDoc.summary === '') {
+    reviewDoc.summary = reviewDoc.body.slice(0, 50);
+  }
+
+  return ReviewModel.collection.estimatedDocumentCount()
+    .then((count) => {
+      reviewDoc.review_id = count + 1;
+      return ReviewModel.create(reviewDoc);
+    });
 };

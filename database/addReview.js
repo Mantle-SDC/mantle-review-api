@@ -8,7 +8,9 @@ module.exports = (reviewPOST) => {
     reviewDoc.photos.push({ url });
   });
 
-  if (reviewDoc.summary || reviewDoc.summary === '') {
+  if (reviewDoc.summary === undefined
+    || reviewDoc.summary === null
+    || reviewDoc.summary === '') {
     reviewDoc.summary = reviewDoc.body.slice(0, 50);
   }
 

@@ -11,7 +11,7 @@ const { logger } = require('../utils/logger');
 const app = express();
 
 app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(express.urlencoded({ extended: false }));
 
 app.get('/reviews', (req, res) => {
   logger.debug('GET /reviews with query data: %o', req.query);
@@ -19,11 +19,15 @@ app.get('/reviews', (req, res) => {
     product: req.query.product_id,
     page: req.query.page || 1,
     count: req.query.count || 5,
+    results: [],
   };
 
   getReviews(req.query.product_id, req.query.sort, req.query.count, req.query.page)
-    .then((data) => {
-      responseData.results = data;
+    .then((dbResponse) => {
+      logger.debug('Response from database: %o', dbResponse);
+      if (dbResponse !== null) {
+        responseData.results = dbResponse;
+      }
       res.status(200).send(responseData);
       logger.debug('Sent status 200, with data: %o', responseData);
     })
@@ -56,10 +60,13 @@ app.get('/reviews/meta', (req, res) => {
   };
 
   getReviewsMeta(req.query.product_id)
-    .then((data) => {
-      responseData.ratings = data.ratings.reduce(countReducer, {});
-      responseData.recommended = data.recommends.reduce(countReducer, {});
-      responseData.characteristics = data.characteristics.reduce(characteristicReducer, {});
+    .then((dbResponse) => {
+      logger.debug('Response from database: %o', dbResponse);
+      if (dbResponse !== null) {
+        responseData.ratings = dbResponse.ratings.reduce(countReducer, {});
+        responseData.recommended = dbResponse.recommends.reduce(countReducer, {});
+        responseData.characteristics = dbResponse.characteristics.reduce(characteristicReducer, {});
+      }
       res.status(200).send(responseData);
       logger.debug('Sent status 200, with data: %o', responseData);
     })
@@ -72,7 +79,8 @@ app.get('/reviews/meta', (req, res) => {
 app.post('/reviews', (req, res) => {
   logger.debug('POST /reviews with body: %o', req.body);
   addReview(req.body)
-    .then(() => {
+    .then((dbResponse) => {
+      logger.debug('Response from database: %o', dbResponse);
       res.status(201).send('CREATED');
       logger.debug('sent status 201 CREATED');
     })
@@ -85,7 +93,8 @@ app.post('/reviews', (req, res) => {
 app.put('/reviews/:review_id/helpful', (req, res) => {
   logger.debug('PUT /reviews/%d/helpful', req.params.review_id);
   markHelpful(req.params.review_id)
-    .then(() => {
+    .then((dbResponse) => {
+      logger.debug('Response from database: %o', dbResponse);
       res.status(204).send('NO CONTENT');
       logger.debug('sent status 204 NO CONTENT');
     })
@@ -98,7 +107,8 @@ app.put('/reviews/:review_id/helpful', (req, res) => {
 app.put('/reviews/:review_id/report', (req, res) => {
   logger.debug('PUT /reviews/%d/report', req.params.review_id);
   reportReview(req.params.review_id)
-    .then(() => {
+    .then((dbResponse) => {
+      logger.debug('Response from database: %o', dbResponse);
       res.status(204).send('NO CONTENT');
       logger.debug('sent status 204 NO CONTENT');
     })

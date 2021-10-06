@@ -6,6 +6,10 @@ mongoose.connect('mongodb://localhost:27017/mantle')
   })
   .catch((err) => console.log('Error connecting to database: ', err));
 
+const photoSchema = new mongoose.Schema({
+  url: { type: String, required: true },
+});
+
 const reviewSchema = new mongoose.Schema({
   review_id: Number,
   product_id: Number,
@@ -18,9 +22,7 @@ const reviewSchema = new mongoose.Schema({
   reviewer_name: { type: String, alias: 'name' },
   reviewer_email: { type: String, alias: 'email' },
   helpfulness: Number,
-  photos: [{
-    id: Number, url: String,
-  }],
+  photos: [photoSchema],
 });
 
 const reviewMetaSchema = new mongoose.Schema({

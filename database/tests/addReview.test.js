@@ -1,7 +1,6 @@
 const expect = require('chai').expect;
 const mongoose = require('mongoose');
 const { addReview } = require('../index');
-const { ReviewModel } = require('../initDB');
 
 describe('', () => {
   before((done) => {
@@ -47,11 +46,10 @@ describe('', () => {
         expect(result.summary).to.equal('This is the summary');
         expect(result.body).to.equal('The body of the review');
         expect(result.recommend).to.equal(true);
-        expect(result.name).to.equal(someUsername);
-        expect(result.email).to.equal('helloworld@domain.test');
-        expect(result.photos).to.have.length(2);
-        expect(result.photos[0].id).to.not.be.null;
-        expect(result.photos[1].id).to.not.be.null;
+        expect(result.reviewer_name).to.equal('someUsername');
+        expect(result.reviewer_email).to.equal('helloworld@domain.test');
+        expect(result.response).to.equal(null);
+        expect(result.photos, 'photos array length').to.have.length(2);
         expect(result.photos[0].url).to.be.oneOf(['http://someimage.test', 'http://anotherimage.test']);
         expect(result.photos[1].url).to.be.oneOf(['http://someimage.test', 'http://anotherimage.test']);
         done();

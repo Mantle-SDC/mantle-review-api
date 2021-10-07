@@ -22,6 +22,7 @@
 `db.characteristics.createIndex({product_id: 1})`
 
 `db.characteristics_reviews.createIndex({characteristic_id: 1})`
+`db.characteristics_reviews.createIndex({review_id: 1});`
 
 # The ***reviews*** collection
 
@@ -133,7 +134,7 @@ db.characteristics_reviews.aggregate([
 ], {allowDiskUse: true});
 ```
 
-40 s
+51 s
 
 **Aggregation that will pull in the average values/ratings of that characteristic**
 
@@ -155,15 +156,18 @@ db.characteristics.aggregate([
         coll: "characteristics_combined",
     }},
 ], {allowDiskUse: true});
+
+db.characteristics_combined.createIndex({product_id: 1});
 ```
 
-190 s
+198 s
 
 *Create index*:
 
 `db.characteristics_combined.createIndex({product_id: 1});`
 
-**Get the ratings and recommends of a single product into a single document**
+
+**Get the ratings and recommends of a single product into a single document, as well as characteristics ratings. This completes the reviewsMeta collection**
 
 ```
 db.reviews.aggregate([
@@ -172,19 +176,6 @@ db.reviews.aggregate([
         ratings: {$push: "$rating"},
         recommends: {$push: "$recommend"},
         }},
-    {$out: {
-        db: "mantle",
-        coll: "reviews_stats",
-    }}
-]);
-```
-
-14 s
-
-**Combine the product rating, recommends, and characteristic ratings into a single document. This completes the reviewsMeta collection**
-
-```
-db.reviews_stats.aggregate([
     {$lookup: {
         from: "characteristics_combined",
         localField: "_id",
@@ -194,14 +185,18 @@ db.reviews_stats.aggregate([
     {$out: {
         db: "mantle",
         coll: "reviewsMeta",
-    }},
-]);
+    }}
+], {allowDiskUse: true});
 ```
-
-56 s
+73 s
 
 _id is the product ID, and is already indexed.
 
+Drop the intermediate collections:
+```
+db.characteristics_averages.drop();
+db.characteristics_combined.drop();
+```
 
 # Miscellaneous
 
@@ -230,3 +225,22 @@ https://docs.mongodb.com/database-tools/mongoexport/#synopsis
 Use `mongoimport` or Mongoose's `Model.insertMany()` to later to restore the data and use it.
 
 You will likely need to manually edit the data a bit because JSON does not store *type* information, and you may not care to keep old ObjectId information.
+
+## *mongodump* to backup/export the database, *mongorestore* to import the database
+
+`mongodump` is a utility for creating a binary export of the contents of a database.
+
+`mongorestore` which provides the corresponding binary data import capability.
+
+Indexes are **not** preserved on export; *You will need to rebuild indexes after restoring the database*
+
+Start the dump from the command line (**not** in the mongo shell):
+
+`mongodump --uri="mongodb://mongodb0.example.com:27017" [additional options]`
+
+Detailed documentation [here](https://docs.mongodb.com/database-tools/mongodump/)
+
+
+When using `mongorestore` to load data files created by mongodump, be sure that you are restoring to the **same major version** of the MongoDB Server that the files were created from.
+
+`mongorestore <options> <connection-string> <directory or file to restore>`

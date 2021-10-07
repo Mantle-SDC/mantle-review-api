@@ -37,11 +37,13 @@ app.get('/reviews', (req, res) => {
     });
 });
 
-const countReducer = (prev, curr) => {
-  const responseObj = prev;
-  if (responseObj[curr] === undefined) responseObj[curr] = 0;
-  responseObj[curr] += 1;
-  return responseObj;
+const countReducer = (ratings = []) => {
+  const ratingsCount = {};
+  for (let i = 0; i < ratings.length; i + 1) {
+    if (ratingsCount[ratings[i]] === undefined) ratingsCount[ratings[i]] = 0;
+    ratingsCount[ratings[i]] += 1;
+  }
+  return ratingsCount;
 };
 
 const characteristicReducer = (prev, curr) => {
@@ -63,8 +65,8 @@ app.get('/reviews/meta', (req, res) => {
     .then((dbResponse) => {
       logger.debug('Response from database: %o', dbResponse);
       if (dbResponse !== null) {
-        responseData.ratings = dbResponse.ratings.reduce(countReducer, {});
-        responseData.recommended = dbResponse.recommends.reduce(countReducer, {});
+        responseData.ratings = countReducer(dbResponse.ratings);
+        responseData.recommended = countReducer(dbResponse.recommends);
         responseData.characteristics = dbResponse.characteristics.reduce(characteristicReducer, {});
       }
       res.status(200).send(responseData);

@@ -225,3 +225,22 @@ https://docs.mongodb.com/database-tools/mongoexport/#synopsis
 Use `mongoimport` or Mongoose's `Model.insertMany()` to later to restore the data and use it.
 
 You will likely need to manually edit the data a bit because JSON does not store *type* information, and you may not care to keep old ObjectId information.
+
+## *mongodump* to backup/export the database, *mongorestore* to import the database
+
+`mongodump` is a utility for creating a binary export of the contents of a database.
+
+`mongorestore` which provides the corresponding binary data import capability.
+
+Indexes are **not** preserved on export; *You will need to rebuild indexes after restoring the database*
+
+Start the dump from the command line (**not** in the mongo shell):
+
+`mongodump --uri="mongodb://mongodb0.example.com:27017" [additional options]`
+
+Detailed documentation [here](https://docs.mongodb.com/database-tools/mongodump/)
+
+
+When using `mongorestore` to load data files created by mongodump, be sure that you are restoring to the **same major version** of the MongoDB Server that the files were created from.
+
+`mongorestore <options> <connection-string> <directory or file to restore>`

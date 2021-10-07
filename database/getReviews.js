@@ -1,4 +1,4 @@
-const { ReviewModel } = require('./initDB');
+const { ReviewModel } = require('./Models');
 
 const getReviews = (productId, sort = 'newest', count = 5, page = 1) => {
   const intCount = parseInt(count, 10);

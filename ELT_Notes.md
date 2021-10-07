@@ -134,7 +134,7 @@ db.characteristics_reviews.aggregate([
 ], {allowDiskUse: true});
 ```
 
-40 s
+51 s
 
 **Aggregation that will pull in the average values/ratings of that characteristic**
 
@@ -160,13 +160,14 @@ db.characteristics.aggregate([
 db.characteristics_combined.createIndex({product_id: 1});
 ```
 
-190 s
+198 s
 
 *Create index*:
 
 `db.characteristics_combined.createIndex({product_id: 1});`
 
-**Get the ratings and recommends of a single product into a single document**
+
+**Get the ratings and recommends of a single product into a single document, as well as characteristics ratings. This completes the reviewsMeta collection**
 
 ```
 db.reviews.aggregate([
@@ -175,19 +176,6 @@ db.reviews.aggregate([
         ratings: {$push: "$rating"},
         recommends: {$push: "$recommend"},
         }},
-    {$out: {
-        db: "mantle",
-        coll: "reviews_stats",
-    }}
-]);
-```
-
-14 s
-
-**Combine the product rating, recommends, and characteristic ratings into a single document. This completes the reviewsMeta collection**
-
-```
-db.reviews_stats.aggregate([
     {$lookup: {
         from: "characteristics_combined",
         localField: "_id",
@@ -197,14 +185,12 @@ db.reviews_stats.aggregate([
     {$out: {
         db: "mantle",
         coll: "reviewsMeta",
-    }},
-]);
+    }}
+], {allowDiskUse: true});
 ```
-
-56 s
+73 s
 
 _id is the product ID, and is already indexed.
-
 
 # Miscellaneous
 

@@ -192,6 +192,12 @@ db.reviews.aggregate([
 
 _id is the product ID, and is already indexed.
 
+Drop the intermediate collections:
+```
+db.characteristics_averages.drop();
+db.characteristics_combined.drop();
+```
+
 # Miscellaneous
 
 ## Use the `$sample` stage to randomly get documents

@@ -12,4 +12,5 @@ dbConnect()
       logger.info('🚀🚀🚀🚀🚀🚀');
       logger.info('==========');
     });
-  });
+  })
+  .catch((err) => logger.error('Error starting; Are the parameters in the .env correct? Error: ', err));

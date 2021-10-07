@@ -1,11 +1,4 @@
 const mongoose = require('mongoose');
-const { logger } = require('../utils/logger');
-
-mongoose.connect('mongodb://localhost:27017/mantle')
-  .then(() => {
-    logger.info('💾💾💾💾💾💾');
-  })
-  .catch((err) => logger.error('Error connecting to database: ', err));
 
 const photoSchema = new mongoose.Schema({
   url: { type: String, required: true },

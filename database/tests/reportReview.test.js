@@ -1,12 +1,12 @@
 const expect = require('chai').expect;
 const mongoose = require('mongoose');
 const { reportReview, getReviews } = require('../index');
-const { ReviewModel } = require('../initDB');
+const { ReviewModel } = require('../Models');
 const { reviewsTestData } = require('./testData');
 
 describe('reportReview', () => {
   before((done) => {
-    // initDB connected first, so we have to reconnect to test db
+    // Just in case , we should connect/reconnect to test db
     mongoose.disconnect()
       .then(() => {
         return mongoose.connect('mongodb://localhost:27017/test')

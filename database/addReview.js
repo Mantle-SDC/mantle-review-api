@@ -1,4 +1,4 @@
-const { ReviewModel } = require('./initDB');
+const { ReviewModel } = require('./Models');
 
 module.exports = (reviewPOST) => {
   const photos = reviewPOST.photos.slice();

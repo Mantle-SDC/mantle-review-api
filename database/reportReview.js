@@ -1,4 +1,4 @@
-const { ReviewModel, ReviewReportedModel } = require('./initDB');
+const { ReviewModel, ReviewReportedModel } = require('./Models');
 
 module.exports = (reviewId) => {
   let reportedReview;

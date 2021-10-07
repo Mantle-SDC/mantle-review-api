@@ -22,6 +22,7 @@
 `db.characteristics.createIndex({product_id: 1})`
 
 `db.characteristics_reviews.createIndex({characteristic_id: 1})`
+`db.characteristics_reviews.createIndex({review_id: 1});`
 
 # The ***reviews*** collection
 
@@ -155,6 +156,8 @@ db.characteristics.aggregate([
         coll: "characteristics_combined",
     }},
 ], {allowDiskUse: true});
+
+db.characteristics_combined.createIndex({product_id: 1});
 ```
 
 190 s

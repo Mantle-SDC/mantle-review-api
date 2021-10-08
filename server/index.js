@@ -13,4 +13,7 @@ dbConnect()
       logger.info('==========');
     });
   })
-  .catch((err) => logger.error('Error starting; Are the parameters in the .env correct? Error: ', err));
+  .catch((err) => {
+    logger.error('DB connection string: mongodb://%s:%d/%s', process.env.DB_HOST, process.env.DB_PORT, process.env.DB_NAME);
+    logger.error('Error starting; Are the parameters in the .env correct? Error: %o', err);
+  });

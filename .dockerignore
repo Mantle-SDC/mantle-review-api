@@ -1,0 +1,7 @@
+node_modules*
+**/*.test.js
+coverage*
+benchmarks*
+jest*
+**/*.md
+sample_data*
